@@ -1,39 +1,30 @@
-ChannelViT
+# ChannelViT
 
-Vision Transformer delivers state-of-the-art image representation. However, in certain
-imaging fields, such as microscopy and statellite imaging, there exist unique
-challenges:
-1. Unlike RGB images, the images in these domains often contain multiple channels, each
-   carrying sematically distinct and independent information.
-2. The input channels may not all be available at test time, requiring the model to
-   perform robustly.
+Vision Transformer sets the benchmark for image representation. However, unique challenges arise in certain imaging fields such as microscopy and satellite imaging:
 
-In this work, we introduce ChannelViT and Hierarchical Channel Sampling (HCS).
-1. ChannelViT constructs patch tokens independently from each input channel and utilize a
-learnable channel embedding to encode channel-specific infromation. This modification
-allows ChannelViT to perform cross-channel and cross-position reasoning, which has shown
-to be crucial for multi-channel imaging.
-2. HCS uses a two-step sampling procedure to mimic the test time channel inavailabilites
-   during training. Unlike channel dropout where each channel is dropped independently,
-   which biases certan number of selected channels, the two stage sampling procedure ensures HCS cover channel combinations with different number of channels uniformly. This result in a consistent and signficant improvement in robustness.
+1. Unlike RGB images, images in these domains often contain multiple channels, each carrying semantically distinct and independent information.
+2. Not all input channels may be available at test time, necessitating a model that performs robustly under these conditions.
+In response to these challenges, we introduce ChannelViT and Hierarchical Channel Sampling (HCS).
 
-If you have any questions or need further assistance, please don't hesitate to create an
-issue. We are here to provide support and guidance. 🤗
+ChannelViT constructs patch tokens independently from each input channel and employs a learnable channel embedding to encode channel-specific information. This modification enables ChannelViT to perform *cross-channel* and *cross-position* reasoning, a critical feature for multi-channel imaging.
+
+HCS employs a two-step sampling procedure to simulate test time channel unavailability during training. Unlike channel dropout, where each channel is dropped independently and biases a certain number of selected channels, the two-stage sampling procedure ensures HCS covers channel combinations with varying numbers of channels *uniformly*. This results in a consistent and significant improvement in robustness.
 
 <figure>
   <p align="center">
-  <img src="assets/channelvit.jpg" width=80% align="center" alt="my alt text"/>
+  <img src="assets/channelvit.jpg" width=90% align="center" alt="my alt text"/>
   </p>
   <figcaption width=80%><em>
-  Illustration of ChannelViT. The input for ChannelViT is a cell image from JUMP-CP, which comprises five fluorescence channels (colored differently) and three brightfield channels (colored in B&W). ChannelViT generates patch tokens for each individual channel, utilizing a learnable channel embedding chn to preserve channel-specific information. The positional embeddings pos and the linear projection $W$ are shared across all channels.
+  Illustration of ChannelViT. The input for ChannelViT is a cell image from JUMP-CP, which comprises five fluorescence channels (colored differently) and three brightfield channels (colored in B&W). ChannelViT generates patch tokens for each individual channel, utilizing a learnable channel embedding </em><b>chn</b><em> to preserve channel-specific information. The positional embeddings </em><b>pos</b><em> and the linear projection </em><b>W</b><em> are shared across all channels.
   </em></figcaption>
 </figure>
 <br/>
 <br/>
 
+Should you have any questions or require further assistance, please do not hesitate to create an issue. We are here to provide support. 🤗
 
-## Get started
-### Environment
+
+## Environment setup
 This project is developed based on [PyTorch 2.0](https://pytorch.org) and [PyTorch-Lightning
 2.0.1](https://www.pytorchlightning.ai/index.html).
 We use [conda](https://docs.conda.io/en/latest/) to manage the Python environment. You
@@ -49,6 +40,45 @@ You can then install contextvit through pip.
 pip install git+https://github.com/insitro/ChannelViT.git
 ```
 
+## Overview
+The table below outlines the experiments conducted in our study, as detailed in our paper. For each experiment, we provide the corresponding training and evaluation scripts, along with the model checkpoint.
+
+## An example on JUMP-CP
+Here we use JUMP-CP as an example to explain our training and evaluation pipelines. Here we consider four settings:
+
+#### ViT-S/16 w/o HCS
+```python
+python amlssl/main/main_supervised.py \
+wandb.project="amlssl-supervised" \
+nickname="${NICKNAME}" \
+trainer.devices=8 \
+trainer.precision=32 \
+trainer.max_epochs=100 \
+trainer.default_root_dir="s3://insitro-user/yujia/checkpoints/${NICKNAME}" \
+meta_arch/backbone=vit_small \
+meta_arch.backbone.args.in_chans=8 \
+meta_arch.target='label' \
+meta_arch.num_classes=161 \
+data@train_data=jumpcp \
+data@val_data_dict=[jumpcp_val,jumpcp_test] \
+train_data.jumpcp.loader.num_workers=32 \
+train_data.jumpcp.loader.batch_size=32 \
+train_data.jumpcp.loader.drop_last=True \
+train_data.jumpcp.args.channels=[0,1,2,3,4,5,6,7] \
+val_data_dict.jumpcp_val.loader.num_workers=32 \
+val_data_dict.jumpcp_val.loader.batch_size=32 \
+val_data_dict.jumpcp_val.loader.drop_last=False \
+val_data_dict.jumpcp_val.args.channels=[0,1,2,3,4,5,6,7] \
+val_data_dict.jumpcp_test.loader.num_workers=32 \
+val_data_dict.jumpcp_test.loader.batch_size=32 \
+val_data_dict.jumpcp_test.loader.drop_last=False \
+val_data_dict.jumpcp_test.args.channels=[0,1,2,3,4,5,6,7] \
+transformations@train_transformations=cell \
+transformations@val_transformations=cell
+```
+#### ViT-S/8 w/ HCS
+#### ChannelViT-S/16 w/o HCS
+#### ChannelViT-S/8 w/ HCS
 
 
 ## Citation
