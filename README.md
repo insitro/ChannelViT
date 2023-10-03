@@ -1,4 +1,4 @@
-# ChannelViT
+# Channel Vision Transformer: An Image Is Worth C x 16 x 16 Words
 
 Vision Transformer sets the benchmark for image representation. However, unique challenges arise in certain imaging fields such as microscopy and satellite imaging:
 
