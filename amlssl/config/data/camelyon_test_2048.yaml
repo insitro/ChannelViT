@@ -1,0 +1,16 @@
+camelyon_test_2048:
+  name: Camelyon17  # data class name
+  args:
+    split: test
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 256
+    pin_memory: True
+    drop_last: False
+    shuffle: False
+
+  output_dir: null
+
+

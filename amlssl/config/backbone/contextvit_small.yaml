@@ -1,0 +1,9 @@
+name: 'contextvit_small'
+args:
+  in_chans: 3
+  drop_path_rate: 0.1
+  plate_keys:
+    - hospital_id
+  plate_values:
+    - 5
+  amortization: linear_mean

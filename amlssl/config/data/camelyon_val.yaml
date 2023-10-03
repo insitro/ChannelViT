@@ -1,0 +1,16 @@
+camelyon_val:
+  name: Camelyon17  # data class name
+  args:
+    split: val
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 64
+    pin_memory: True
+    drop_last: False
+    shuffle: False
+
+  output_dir: null
+
+

@@ -1,0 +1,4 @@
+
+patch_size: 8
+checkpoint: null
+ssl_method: dino

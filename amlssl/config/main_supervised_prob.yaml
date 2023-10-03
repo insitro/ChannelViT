@@ -1,0 +1,22 @@
+defaults:
+  - meta_arch: supervised_prob
+  - data@train_data: camelyon_train
+  - data@val_data_dict:
+    - camelyon_id_val
+    - camelyon_val
+  - transformations: cell
+  - _self_
+
+wandb:
+  project: "amlssl-als-evaluation"
+
+nickname: null
+task_name: null
+
+
+trainer:
+  devices: 8
+  accelerator: "gpu"
+  max_epochs: 100
+  precision: 32
+  default_root_dir: "./snapshots/"

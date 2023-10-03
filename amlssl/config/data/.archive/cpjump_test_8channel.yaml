@@ -1,0 +1,15 @@
+# cpjump testing data
+name: CpjumpBase  # data class name
+args:
+  cyto_mask_path: "s3://insitro-user/yujia/cellpainting-gallery/cpg0000-jump-pilot/source_4/images/2020_11_04_CPJUMP1/images/BR00116993__2020-11-05T23_11_39-Measurement1/cell_segmentation_and_tiling_fix_merged_normalized/tiles_dataframe.pq"
+
+# testing loader configuration
+loader:
+  num_workers: 32
+  batch_size: 256
+  pin_memory: True
+  drop_last: False
+
+# testing output directory configuration
+# this can be either a local path or a s3 path
+output_dir: null

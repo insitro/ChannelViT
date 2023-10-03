@@ -1,0 +1,25 @@
+# Checkpoint to the pre-trained DINO
+checkpoint: null  # checkpoint to the pre-trained DINO
+
+# 1 if only use the last transformer cls token for prediction
+# for vit small, we concatenate the last four transformer cls outputs
+n_last_blocks: 1
+
+# linear evaluator
+use_mlp: False
+num_classes: 2
+target: tumor
+label_smoothing: 0.0
+
+optimizer:
+  name: SGD
+  args:
+    lr: 0.001  # for batch size 256
+    weight_decay: 0
+    momentum: 0.9
+
+scheduler:
+  name: CosineAnnealingLR
+  args:
+    T_max: null
+    eta_min: 0

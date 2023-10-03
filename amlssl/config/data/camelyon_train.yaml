@@ -1,0 +1,23 @@
+camelyon_train:
+  # This is the camelyon17 labeled training split
+  # Compound A549 24 hours
+  name: Camelyon17  # data class name
+  args:
+    split: train
+    scale: 1
+    channels:
+      - 0
+      - 1
+      - 2
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 32
+    pin_memory: True
+    drop_last: False
+    shuffle: True
+
+  output_dir: null
+
+

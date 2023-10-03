@@ -1,0 +1,16 @@
+# Configurations for the data transformations
+name: RGBAugmentation
+args:
+  global_resize: 96
+  flip_prob: 0.5
+  color_jitter:
+    - 0.4
+    - 0.4
+    - 0.4
+    - 0.1
+  color_jitter_prob: 0.0
+  center_crop: null
+  crop_scale:
+    - 0.08
+    - 1.0
+  channel_mask: []

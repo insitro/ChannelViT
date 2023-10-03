@@ -1,0 +1,20 @@
+imagenet:
+  name: ImageNet
+  args:
+    split: train
+    channels:
+      - 0
+      - 1
+      - 2
+    sample_channels: -1
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 32
+    pin_memory: True
+    drop_last: False
+    shuffle: True
+
+  output_dir: null
+

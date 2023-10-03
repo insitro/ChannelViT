@@ -1,0 +1,15 @@
+camelyon_unlabeled_train:
+  name: Camelyon17  # Specify the data class name that we will be using for creating the dataset. You can find the data class under `contextvit/data/`
+  args:
+    # Only load unlabeled images from the training hospitals
+    split: train_unlabeled
+
+  # Configuration for the training data loader
+  loader:
+    num_workers: 32
+    batch_size: 32
+    pin_memory: True
+    drop_last: False
+    shuffle: True
+
+  output_dir: null

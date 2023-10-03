@@ -1,0 +1,17 @@
+# Configurations for the data transformations
+name: CellAugmentation
+args:
+  channel_mask: []
+
+normalization:
+  mean:
+    - 0
+    - 0
+    - 0
+    - 0
+  std:
+    - 1
+    - 1
+    - 1
+    - 1
+

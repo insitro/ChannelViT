@@ -1,0 +1,13 @@
+# training data configuration
+name: CpjumpBase  # data class name
+args:
+  cyto_mask_path: "s3://insitro-user/yujia/cellpainting-gallery/cpg0000-jump-pilot/source_4/images/2020_11_04_CPJUMP1/images/BR00116991__2020-11-05T19_51_35-Measurement1/cell_segmentation_and_tiling_fix_merged_normalized/tiles_dataframe.pq"
+
+# training data loader configuration
+loader:
+  num_workers: 32
+  batch_size: 32
+  pin_memory: True
+  drop_last: True
+  shuffle: True
+
