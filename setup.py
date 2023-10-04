@@ -4,12 +4,12 @@ import pkg_resources
 from setuptools import find_packages, setup
 
 setup(
-    name="AMLSSL",
-    py_modules=["amlssl"],
+    name="ChanelViT",
+    py_modules=["channelvit"],
     version="1.0",
-    description="AML toolkit for self supervised learning",
+    description="Channel Vision Transformers",
     author="Insitro",
-    packages=find_packages() + ["amlssl/config"],
+    packages=find_packages() + ["channelvit/config"],
     install_requires=[
         str(r)
         for r in pkg_resources.parse_requirements(
@@ -17,5 +17,4 @@ setup(
         )
     ],
     include_package_data=True,
-    # extras_require={'dev': ['pytest']},
 )
