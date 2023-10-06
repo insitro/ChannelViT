@@ -43,7 +43,7 @@ pip install git+https://github.com/insitro/ChannelViT.git
 This section provides an example of our training and evaluation pipelines using JUMP-CP. The preprocessed JUMP-CP data utilized here was released in our previous work, [insitro/ContextViT](https://github.com/insitro/ContextViT).
 
 
-### ViT-S/16 w/o HCS
+### Training ViT-S/16 w/o HCS
 Let's start with the most straightforward scenario: training the ViT-S/16 model without HCS. We employ [hydra](https://hydra.cc/) for managing our experiment configuration. The script provided below will load its corresponding main configuration file, `amlssl/config/main_supervised.yaml`, along with any command line overrides. It trains the ViT-S/16 model to minimize the cross-entropy loss on the JUMP-CP training data over the course of 100 epochs. The process requires a single GPU and operates with a batch size of 32.
 ```bash
 python amlssl/main/main_supervised.py \
@@ -61,7 +61,7 @@ transformations@val_transformations=cell
 ```
 Given that each cell image in JUMP-CP contains 8 channels, we override the input channels to 8. Throughout the training, we save the snapshots in the `./snapshots/` directory. You can alter this path by overriding the value of `trainer.default_root_dir`. 
 
-### ViT-S/8 w/ HCS
+### Training ViT-S/8 w/ HCS
 To train the ViT-S/16 using hierarchical channel sampling, simply override the meta_arch/backbone setting to hcs_vit_small. With this setting, the Hierarchical Channel Sampling (HCS) will perform the following actions for each batch:
 1. Randomly determine the number of channels to be used for the current batch.
 2. Randomly select the combinations of channels.
@@ -81,6 +81,19 @@ data@val_data_dict=[jumpcp_val,jumpcp_test] \
 train_data.loader.batch_size=32 \
 transformations@train_transformations=cell \
 transformations@val_transformations=cell
+```
+
+### Evaluating ViT
+The script below will enumerate all possible channel combinations and evaluate the corresponding testing accuracy of the trained model (stored at `PATH_TO_CKPT`). In this case, we set `transformation_mask=True` because ViT assumes the same number of input channels for the patch embedding layer. The unselected channels will be filled with zeros, and the selected channels will be scaled by the ratio of the total number of channels to the number of selected channels.
+```bash
+python amlssl/main/main_supervised_evalall.py \
+trainer.devices=1 \
+transformation_mask=True \
+data@val_data=jumpcp_test \
+val_data.jumpcp_test.loader.batch_size=32 \
+val_data.jumpcp_test.args.channels=[0,1,2,3,4,5,6,7] \
+transformations=cell \
+checkpoint=${PATH_TO_CKPT}
 ```
 
 ### ChannelViT-S/16 w/o HCS
