@@ -7,9 +7,9 @@ import torch.nn.functional as F
 from omegaconf import DictConfig, open_dict
 from torch.utils.data import DataLoader
 
-import amlssl.data as data
-import amlssl.utils as utils
-import amlssl.backbone as backbone
+import channelvit.data as data
+import channelvit.utils as utils
+import channelvit.backbone as backbone
 
 
 class Supervised(pl.LightningModule):
@@ -136,10 +136,6 @@ class Supervised(pl.LightningModule):
                     else:
                         continue
 
-            # loss = 0
-            # for key, single_batch in batch.items():
-            #     loss += self.train_single_batch(single_batch)
-            # loss /= len(batch)
         else:
             loss = self.train_single_batch(batch)
 

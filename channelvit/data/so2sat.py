@@ -6,8 +6,8 @@ import torch
 from omegaconf import DictConfig, ListConfig
 from tqdm import tqdm
 
-from amlssl import transformations
-from amlssl.data.s3dataset import S3Dataset
+from channelvit import transformations
+from channelvit.data.s3dataset import S3Dataset
 
 
 class So2Sat(S3Dataset):

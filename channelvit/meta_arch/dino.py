@@ -23,8 +23,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from omegaconf import DictConfig, open_dict
 
-import amlssl.backbone as backbone
-import amlssl.utils as utils
+import channelvit.backbone as backbone
+import channelvit.utils as utils
 
 
 def cancel_gradients_last_layer(epoch, model, freeze_last_layer):

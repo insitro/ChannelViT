@@ -6,8 +6,8 @@ import torch
 from omegaconf import DictConfig, ListConfig
 from tqdm import tqdm
 
-from amlssl import transformations
-from amlssl.data.s3dataset import S3Dataset
+from channelvit import transformations
+from channelvit.data.s3dataset import S3Dataset
 
 
 def load_meta_data():
@@ -67,8 +67,6 @@ class JUMPCP(S3Dataset):
         channels: Union[List[int], None],
         upsample: int = 1,
         channel_mask: bool = False,
-        # sample_channels: int = -1,
-        # train_partition: str = None,
         scale: float = 1,
     ) -> None:
         """Initialize the dataset."""
@@ -113,22 +111,7 @@ class JUMPCP(S3Dataset):
         self.plate2id, self.field2id, self.well2id, self.well2lbl = load_meta_data()
 
         self.channel_mask = channel_mask
-        # self.sample_channels = sample_channels
 
-        # # Partition the traiining data based on the index (even or odd)
-        # if train_partition is not None:
-        #     # if train_partition is "0-1-2_2-3-4".
-        #     # We split the dataset into two parts.
-        #     # Where one uses channel "0,1,2" and the other uses channel "2,3,4"
-        #     self.train_partition = [
-        #         [int(c) for c in train_partition_channels.split('-')]
-        #         for train_partition_channels in train_partition.split('_')
-        #     ]
-
-        #     if self.sample_channels != -1:
-        #         raise ValueError("sample channel and train_partition cannot both be on")
-        # else:
-        #     self.train_partition = None
 
     def get_split(self, df, split_name, seed=0):
         np.random.seed(seed)

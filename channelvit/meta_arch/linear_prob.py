@@ -8,9 +8,9 @@ import torch.nn.functional as F
 from omegaconf import DictConfig, open_dict
 from torch.utils.data import DataLoader
 
-import amlssl.data as data
-import amlssl.utils as utils
-from amlssl.meta_arch import DINO
+import channelvit.data as data
+import channelvit.utils as utils
+from channelvit.meta_arch import DINO
 
 
 def get_checkpoint_path(ckpt):
@@ -44,7 +44,7 @@ class LinearProb(pl.LightningModule):
     def __init__(self, main_linear_prob_cfg: DictConfig) -> None:
         super().__init__()
         # read the cfg for the linear prob meta arch
-        # e.g.: amlssl/config/meta_arch/linear_prob.yaml
+        # e.g.: channelvit/config/meta_arch/linear_prob.yaml
         self.cfg = main_linear_prob_cfg.meta_arch
 
         # load the data cfg from the root cfg

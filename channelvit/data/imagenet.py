@@ -5,8 +5,8 @@ import torch
 from omegaconf import DictConfig
 from PIL import Image
 
-from amlssl import transformations
-from amlssl.data.s3dataset import S3Dataset
+from channelvit import transformations
+from channelvit.data.s3dataset import S3Dataset
 
 TRAIN_DATASET_PATH = (
     "s3://insitro-curated-data/public/imagenet/indexed_df/train/dataframe.pq"
