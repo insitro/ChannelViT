@@ -2,14 +2,10 @@ jumpcp:
   name: JUMPCP
   args:
     cyto_mask_path_list:
-      - "s3://insitro-user/yujia/cellpainting-gallery/cpg0000-jump-pilot/source_4/images/2020_11_04_CPJUMP1/images/BR00116991__2020-11-05T19_51_35-Measurement1/cell_segmentation_and_tiling_fix_merged_masked/tiles_dataframe.pq"
-      #- "s3://insitro-user/yujia/cellpainting-gallery/cpg0000-jump-pilot/source_4/images/2020_11_04_CPJUMP1/images/BR00116993__2020-11-05T23_11_39-Measurement1/cell_segmentation_and_tiling_fix_merged_masked/tiles_dataframe.pq"
-      #- "s3://insitro-user/yujia/cellpainting-gallery/cpg0000-jump-pilot/source_4/images/2020_11_04_CPJUMP1/images/BR00117000__2020-11-03T07_28_24-Measurement1/cell_segmentation_and_tiling_fix_merged_masked/tiles_dataframe.pq"
-      #
+      - "s3://insitro-research-2023-context-vit/jumpcp/BR00116991.pq"
+
     perturbation_list:
       - compound
-      #- chemical
-      #- crispr
       
     split: train
 
@@ -26,10 +22,6 @@ jumpcp:
     upsample: 1
     channel_mask: False
     scale: 1
-
-    #sample_channels: -1
-
-    #train_partition: null
 
   # training data loader configuration
   loader:
