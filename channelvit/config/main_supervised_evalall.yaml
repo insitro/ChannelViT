@@ -5,10 +5,6 @@ defaults:
   - transformations: cell
   - _self_
 
-wandb:
-  project: "amlssl-supervised"
-
-nickname: null
 
 channels:
   - 0

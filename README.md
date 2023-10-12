@@ -34,30 +34,43 @@ cd ChannelViT
 conda env create -f environment.yml
 conda activate channelvit 
 ```
-You can then install contextvit through pip.
+You can then install channelvit through pip.
 ```bash
 pip install git+https://github.com/insitro/ChannelViT.git
 ```
 
 ## Reproducing the results on JUMP-CP
-This section provides an example of our training and evaluation pipelines using JUMP-CP. The preprocessed JUMP-CP data utilized here was released in our previous work, [insitro/ContextViT](https://github.com/insitro/ContextViT).
+This section provides an example of our training and evaluation pipelines using JUMP-CP. The preprocessed JUMP-CP data utilized here was released in our previous work, "Contextual Vision Transformers for Robust Representation Learning" ([insitro/ContextViT](https://github.com/insitro/ContextViT)).
 
+### Visualizing the correlations among the input channels
+Let's start with visualizing the 
+```bash
+python channelvit/main/main_correlation.py \
+    trainer.devices=8 \
+    trainer.max_epochs=100 \
+    data@train_data=jumpcp \
+    data@val_data_dict=[jumpcp_test] \
+    transformations@train_transformations=cell \
+    transformations@val_transformations=cell
+    val_transformations.normalization.mean=[0,0,0,0,0,0,0,0] \
+    val_transformations.normalization.std=[1,1,1,1,1,1,1,1]
+```
 
 ### Training ViT-S/16 w/o HCS
-Let's start with the most straightforward scenario: training the ViT-S/16 model without HCS. We employ [hydra](https://hydra.cc/) for managing our experiment configuration. The script provided below will load its corresponding main configuration file, `amlssl/config/main_supervised.yaml`, along with any command line overrides. It trains the ViT-S/16 model to minimize the cross-entropy loss on the JUMP-CP training data over the course of 100 epochs. The process requires 8 GPUs and operates with a batch size of 32 per GPU.
+Let's start with the most straightforward scenario: training the ViT-S/16 model without HCS. We employ [hydra](https://hydra.cc/) for managing our experiment configuration. The script provided below will load its corresponding main configuration file, `channelvit/config/main_supervised.yaml`, along with any command line overrides. It trains the ViT-S/16 model to minimize the cross-entropy loss on the JUMP-CP training data over the course of 100 epochs. The process requires 8 GPUs and operates with a batch size of 32 per GPU.
 ```bash
-python amlssl/main/main_supervised.py \
-trainer.devices=8 \
-trainer.max_epochs=100 \
-meta_arch/backbone=vit_small \
-meta_arch.backbone.args.in_chans=8 \
-meta_arch.target='label' \
-meta_arch.num_classes=161 \
-data@train_data=jumpcp \
-data@val_data_dict=[jumpcp_val,jumpcp_test] \
-train_data.loader.batch_size=32 \
-transformations@train_transformations=cell \
-transformations@val_transformations=cell
+python channelvit/main/main_supervised.py \
+    trainer.devices=8 \
+    trainer.max_epochs=100 \
+    meta_arch/backbone=vit_small \
+    meta_arch.backbone.args.in_chans=8 \
+    meta_arch.target='label' \
+    meta_arch.num_classes=161 \
+    data@train_data=jumpcp \
+    data@val_data_dict=[jumpcp_val,jumpcp_test] \
+    train_data.loader.batch_size=32 \
+    transformations@train_transformations=cell \
+    transformations@val_transformations=cell
 ```
 Given that each cell image in JUMP-CP contains 8 channels, we override the input channels to 8. Throughout the training, we save the snapshots in the `./snapshots/` directory. You can alter this path by overriding the value of `trainer.default_root_dir`. 
 
@@ -68,50 +81,50 @@ To train the ViT-S/16 using hierarchical channel sampling, simply override the m
 3. Scale the selected channels by a factor, which is calculated as the ratio of the total number of channels to the number of selected channels.
 The script below provides an example of how to train the ViT-S/8 model using HCS.
 ```bash
-python amlssl/main/main_supervised.py \
-trainer.devices=8 \
-trainer.max_epochs=100 \
-meta_arch/backbone=hcs_vit_small \
-meta_arch.backbone.args.in_chans=8 \
-meta_arch.batchbone.args.patch_size=8 \
-meta_arch.target='label' \
-meta_arch.num_classes=161 \
-data@train_data=jumpcp \
-data@val_data_dict=[jumpcp_val,jumpcp_test] \
-train_data.loader.batch_size=32 \
-transformations@train_transformations=cell \
-transformations@val_transformations=cell
+python channelvit/main/main_supervised.py \
+    trainer.devices=8 \
+    trainer.max_epochs=100 \
+    meta_arch/backbone=hcs_vit_small \
+    meta_arch.backbone.args.in_chans=8 \
+    meta_arch.batchbone.args.patch_size=8 \
+    meta_arch.target='label' \
+    meta_arch.num_classes=161 \
+    data@train_data=jumpcp \
+    data@val_data_dict=[jumpcp_val,jumpcp_test] \
+    train_data.loader.batch_size=32 \
+    transformations@train_transformations=cell \
+    transformations@val_transformations=cell
 ```
 
 ### Evaluating ViT
 The script below will enumerate all possible channel combinations and evaluate the corresponding testing accuracy of the trained model (stored at `PATH_TO_CKPT`). In this case, we set `transformation_mask=True` because ViT assumes the same number of input channels for the patch embedding layer. The unselected channels will be filled with zeros, and the selected channels will be scaled by the ratio of the total number of channels to the number of selected channels.
 ```bash
-python amlssl/main/main_supervised_evalall.py \
-trainer.devices=8 \
-transformation_mask=True \
-data@val_data=jumpcp_test \
-val_data.jumpcp_test.loader.batch_size=32 \
-val_data.jumpcp_test.args.channels=[0,1,2,3,4,5,6,7] \
-transformations=cell \
-checkpoint=${PATH_TO_CKPT}
+python channelvit/main/main_supervised_evalall.py \
+    trainer.devices=8 \
+    transformation_mask=True \
+    data@val_data=jumpcp_test \
+    val_data.jumpcp_test.loader.batch_size=32 \
+    val_data.jumpcp_test.args.channels=[0,1,2,3,4,5,6,7] \
+    transformations=cell \
+    checkpoint=${PATH_TO_CKPT}
 ```
 
 ### ChannelViT-S/16 w/o HCS
 Training ChannelViT follows a similar process to training ViT. All you need to do is override the meta_arch/backbone setting.
 
 ```bash
-python amlssl/main/main_supervised.py \
-trainer.devices=8 \
-trainer.max_epochs=100 \
-meta_arch/backbone=channelvit_small \
-meta_arch.backbone.args.in_chans=8 \
-meta_arch.target='label' \
-meta_arch.num_classes=161 \
-data@train_data=jumpcp \
-data@val_data_dict=[jumpcp_val,jumpcp_test] \
-train_data.loader.batch_size=32 \
-transformations@train_transformations=cell \
-transformations@val_transformations=cell
+python channelvit/main/main_supervised.py \
+    trainer.devices=8 \
+    trainer.max_epochs=100 \
+    meta_arch/backbone=channelvit_small \
+    meta_arch.backbone.args.in_chans=8 \
+    meta_arch.target='label' \
+    meta_arch.num_classes=161 \
+    data@train_data=jumpcp \
+    data@val_data_dict=[jumpcp_val,jumpcp_test] \
+    train_data.loader.batch_size=32 \
+    transformations@train_transformations=cell \
+    transformations@val_transformations=cell
 ```
 
 ### ChannelViT-S/8 w/ HCS
@@ -120,30 +133,30 @@ Given that the patch token of ChannelViT originates from a single channel, apply
 The following script provides an example of how to train the ChannelViT-S/8 model using HCS.
 
 ```bash
-python amlssl/main/main_supervised.py \
-trainer.devices=8 \
-trainer.max_epochs=100 \
-meta_arch/backbone=hcs_channelvit_small \
-meta_arch.backbone.args.in_chans=8 \
-meta_arch.target='label' \
-meta_arch.num_classes=161 \
-data@train_data=jumpcp \
-data@val_data_dict=[jumpcp_val,jumpcp_test] \
-train_data.loader.batch_size=32 \
-transformations@train_transformations=cell \
-transformations@val_transformations=cell
+python channelvit/main/main_supervised.py \
+    trainer.devices=8 \
+    trainer.max_epochs=100 \
+    meta_arch/backbone=hcs_channelvit_small \
+    meta_arch.backbone.args.in_chans=8 \
+    meta_arch.target='label' \
+    meta_arch.num_classes=161 \
+    data@train_data=jumpcp \
+    data@val_data_dict=[jumpcp_val,jumpcp_test] \
+    train_data.loader.batch_size=32 \
+    transformations@train_transformations=cell \
+    transformations@val_transformations=cell
 ```
 
 ### Evaluating ChannelViT
 ```bash
-python amlssl/main/main_supervised_evalall.py \
-trainer.devices=8 \
-transformation_mask=True \
-data@val_data=jumpcp_test \
-val_data.jumpcp_test.loader.batch_size=32 \
-val_data.jumpcp_test.args.channels=[0,1,2,3,4,5,6,7] \
-transformations=cell \
-checkpoint=${PATH_TO_CKPT}
+python channelvit/main/main_supervised_evalall.py \
+    trainer.devices=8 \
+    transformation_mask=True \
+    data@val_data=jumpcp_test \
+    val_data.jumpcp_test.loader.batch_size=32 \
+    val_data.jumpcp_test.args.channels=[0,1,2,3,4,5,6,7] \
+    transformations=cell \
+    checkpoint=${PATH_TO_CKPT}
 ```
 
 ## Citation

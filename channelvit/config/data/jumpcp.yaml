@@ -19,7 +19,6 @@ jumpcp:
       - 6  #LowZBF
       - 7  #Brightfield
 
-    upsample: 1
     channel_mask: False
     scale: 1
 

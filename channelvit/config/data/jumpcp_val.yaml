@@ -19,7 +19,6 @@ jumpcp_val:
       - 6  #LowZBF
       - 7  #Brightfield
 
-    upsample: 1
     scale: 1  # scale the input to compensate for channel masking
 
   # training data loader configuration

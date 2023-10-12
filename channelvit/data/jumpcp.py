@@ -65,7 +65,6 @@ class JUMPCP(S3Dataset):
         transform_cfg: DictConfig,
         perturbation_list: ListConfig[str],
         channels: Union[List[int], None],
-        upsample: int = 1,
         channel_mask: bool = False,
         scale: float = 1,
     ) -> None:
@@ -77,14 +76,6 @@ class JUMPCP(S3Dataset):
             [pd.read_parquet(path) for path in cyto_mask_path_list], ignore_index=True
         )
         df = self.get_split(df, split)
-
-        if upsample != 1:
-            # upsample the dataset to increase num of batches per epoch --> match
-            # optimization statistics  with imagenet
-            print(f"Upsampling each epoch by {upsample}")
-            print(f"Original size {len(df)}")
-            df = pd.concat([df for _ in range(int(upsample))], ignore_index=True)
-            print(f"After upsample size {len(df)}")
 
         self.data_path = list(df["path"])
         self.data_id = list(df["ID"])
@@ -126,12 +117,6 @@ class JUMPCP(S3Dataset):
             return df.iloc[perm[train_end:validate_end]]
         elif split_name == "test":
             return df.iloc[perm[validate_end:]]
-        elif "fluro_bright" in split_name:
-            ratio = float(split_name[len("fluro_bright")+1:])
-            return df.iloc[perm[int(train_end*ratio):train_end]]
-        elif "fluro" in split_name:
-            ratio = float(split_name[len("fluro")+1:])
-            return df.iloc[perm[:int(train_end*ratio)]]
         else:
             raise ValueError("Unknown split")
 
@@ -149,39 +134,26 @@ class JUMPCP(S3Dataset):
 
         channels = self.channels.numpy()
 
+        assert type(img_chw) is not list, "Only support jumpcp for supervised training"
+
         if self.scale != 1:
-            if type(img_chw) is list:
-                # multi crop for DINO training
-                img_chw = [img * self.scale for img in img_chw]
-            else:
-                # single view for linear probing
-                img_chw *= self.scale
+            # scale the image pixels to compensate for the masked channels
+            # used in inference
+            img_chw *= self.scale
 
         # mask out channels
-        if type(img_chw) is list:
-            if self.channel_mask:
-                unselected = [c for c in range(len(img_chw[0])) if c not in channels]
-                for i in range(len(img_chw)):
-                    img_chw[i][unselected] = 0
-            else:
-                img_chw = [img[channels] for img in img_chw]
+        if self.channel_mask:
+            # mask out unselected channels by setting their pixel values to 0
+            unselected = [c for c in range(len(img_chw)) if c not in channels]
+            img_chw[unselected] = 0
         else:
-            if self.channel_mask:
-                unselected = [c for c in range(len(img_chw)) if c not in channels]
-                img_chw[unselected] = 0
-            else:
-                img_chw = img_chw[channels]
+            img_chw = img_chw[channels]
 
         return (
             img_chw,
             {
-                # "ID": self.data_id[index],
-                # "well_loc": self.well_loc[index],
                 "channels": channels,
                 "label": self.well2lbl[self.perturbation_type][self.well_loc[index]],
-                "well_id": self.well2id[self.well_loc[index]],
-                "plate_id": self.plate2id[self.data_id[index].split("_")[0]],
-                "field_id": self.field2id[self.data_id[index].split("_")[2]],
             },
         )
 

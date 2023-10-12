@@ -6,7 +6,6 @@ from pytorch_lightning import loggers as pl_loggers
 import logging
 import boto3
 import torch
-# from lightning_fabric.strategies import DDPStrategy
 from pytorch_lightning.callbacks import LearningRateMonitor
 from omegaconf import DictConfig
 from pytorch_lightning.strategies import DDPStrategy
@@ -17,16 +16,12 @@ from amlssl.meta_arch import LinearProb
 
 @hydra.main(version_base=None, config_path="../config", config_name="main_linear_prob")
 def linear_prob(cfg: DictConfig) -> None:
-    wandb_logger = pl_loggers.WandbLogger(**cfg.wandb)
-    wandb_logger.log_hyperparams({"nickname": cfg.nickname})
-
     # Load the linear probing model (pl-LightningModule)
     model = LinearProb(cfg)
 
     # Define the trainer.
     # We will use the configurations under cfg.trainer.
     trainer = pl.Trainer(
-        logger=wandb_logger,
         strategy=DDPStrategy(find_unused_parameters=True),
         callbacks=[LearningRateMonitor(logging_interval="step")],
         **cfg.trainer

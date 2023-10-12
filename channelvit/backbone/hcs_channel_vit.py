@@ -8,8 +8,8 @@ import torch
 import torch.distributed as dist
 import torch.nn as nn
 
-from amlssl.backbone.vision_transformer import Block
-from amlssl.utils import trunc_normal_
+from channelvit.backbone.vision_transformer import Block
+from channelvit.utils import trunc_normal_
 
 
 class PatchEmbedPerChannel(nn.Module):

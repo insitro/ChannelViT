@@ -3,7 +3,6 @@ jumpcp_test:
   args:
     cyto_mask_path_list:
       - "s3://insitro-research-2023-context-vit/jumpcp/BR00116991.pq"
-      #
     perturbation_list:
       - compound
       
@@ -19,7 +18,6 @@ jumpcp_test:
       - 6  #LowZBF
       - 7  #Brightfield
 
-    upsample: 1
     scale: 1  # scale the input to compensate for channel masking
     channel_mask: False
 

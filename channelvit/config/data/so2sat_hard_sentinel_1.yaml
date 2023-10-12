@@ -15,7 +15,6 @@ so2sat_hard_sentinel_1:
       - 6
       - 7
 
-    upsample: 1
     channel_mask: False
     scale: 1
 

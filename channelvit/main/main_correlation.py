@@ -8,8 +8,8 @@ import torch
 from omegaconf import DictConfig
 from torch.utils.data import DataLoader
 
-import amlssl.data as data
-from amlssl.meta_arch import CorrelationComputer
+import channelvit.data as data
+from channelvit.meta_arch import CorrelationComputer
 
 
 @hydra.main(version_base=None, config_path="../config", config_name="main_correlation")

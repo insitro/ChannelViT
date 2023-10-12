@@ -2,7 +2,6 @@
 import pytorch_lightning as pl
 import torch
 import torch.distributed as dist
-from omegaconf import DictConfig, open_dict
 
 
 class CorrelationComputer(pl.LightningModule):

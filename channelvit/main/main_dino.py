@@ -6,12 +6,11 @@ import logging
 import boto3
 import torch
 from omegaconf import DictConfig, open_dict
-from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from torch.utils.data import DataLoader
 
-import amlssl.data as data
-from amlssl.meta_arch import DINO
+import channelvit.data as data
+from channelvit.meta_arch import DINO
 
 
 def get_train_loader(cfg: DictConfig):
@@ -41,9 +40,6 @@ def get_train_loader(cfg: DictConfig):
 
 @hydra.main(version_base=None, config_path="../config", config_name="main_dino")
 def train(cfg: DictConfig) -> None:
-    wandb_logger = pl_loggers.WandbLogger(**cfg.wandb)
-    wandb_logger.log_hyperparams({"nickname": cfg.nickname})
-
     # get the train data loader
     train_loader = get_train_loader(cfg)
 
@@ -59,9 +55,7 @@ def train(cfg: DictConfig) -> None:
         LearningRateMonitor(logging_interval="step"),
         ModelCheckpoint(dirpath=cfg.trainer.default_root_dir, save_top_k=-1),
     ]
-    trainer = pl.Trainer(
-        logger=wandb_logger, strategy="ddp", callbacks=callbacks, **cfg.trainer
-    )
+    trainer = pl.Trainer(strategy="ddp", callbacks=callbacks, **cfg.trainer)
 
     # Fit the model. if cfg.checkpoint is specified, we will start from the saved
     # checkpoint.

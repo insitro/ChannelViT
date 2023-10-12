@@ -8,9 +8,6 @@ defaults:
     # Options: BR00116991, BR00116993, BR00117000, combined
   - _self_
 
-wandb:
-  project: "amlssl"  # This will be used by wandb
-
 nickname: null
 
 trainer:

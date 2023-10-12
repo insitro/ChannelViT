@@ -3,53 +3,21 @@
 import hydra
 import pytorch_lightning as pl
 import logging
-import wandb
 import boto3
-import wandb
 import torch
 from omegaconf import DictConfig, open_dict
-from pytorch_lightning import loggers as pl_loggers
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from torch.utils.data import DataLoader
 from itertools import combinations
 
-import amlssl.data as data
-from amlssl.meta_arch import Supervised
-
-
-def get_checkpoint_path(ckpt):
-    '''Get the exact checkpoint path based on the prefix and the epoch number.
-    Note that the original checkpoint is named after both the epochs and the number of
-    updates. This method enables us to automatically fetch the latest ckpt based on the
-    epoch number.
-    '''
-    assert ckpt.startswith("s3://insitro-user/")
-    prefix = ckpt[len("s3://insitro-user/"):]
-
-    try:
-        s3 = boto3.client("s3")
-        response = s3.list_objects_v2(Bucket="insitro-user",
-                                      Prefix=prefix,
-                                      MaxKeys=100)
-        assert (len(response['Contents']) == 1,
-            "Received more than one files with the given ckpt prefix")
-
-        ckpt = "s3://insitro-user/" + response['Contents'][0]['Key']
-        print(f"Getting ckpt from {ckpt}")
-
-        return ckpt
-
-    except Exception as e:
-        print(prefix)
-        raise e
+import channelvit.data as data
+from channelvit.meta_arch import Supervised
 
 
 @hydra.main(version_base=None, config_path="../config",
             config_name="main_supervised_evalall")
 def predict(cfg: DictConfig) -> None:
-    ckpt = get_checkpoint_path(cfg.checkpoint)
-    print(f"loading model from ckpt {ckpt}")
-    model = Supervised.load_from_checkpoint(ckpt)
+    print(f"loading model from ckpt {cfg.checkpoint}")
+    model = Supervised.load_from_checkpoint(cfg.checkpoint)
 
     channels = [int(c) for c in cfg.channels]
 
@@ -74,13 +42,6 @@ def predict(cfg: DictConfig) -> None:
                 with open_dict(cfg):
                     cfg.val_data = val_data_cfg
 
-            # create a new wandb entry
-            wandb_logger = pl_loggers.WandbLogger(**cfg.wandb)
-            nickname = (cfg.nickname + "-evaluation-correct-ch-"
-                        + "-".join([str(c) for c in selected]))
-
-            wandb_logger.log_hyperparams({"nickname": nickname})
-
             val_data = getattr(data, val_data_cfg.name)(
                 is_train=False,
                 transform_cfg=cfg.transformations,
@@ -89,15 +50,8 @@ def predict(cfg: DictConfig) -> None:
             val_loader = DataLoader(val_data, **val_data_cfg.loader,
                                     collate_fn=val_data.collate_fn)
 
-            trainer = pl.Trainer(
-                logger=wandb_logger, strategy="ddp", **cfg.trainer
-            )
-
+            trainer = pl.Trainer(strategy="ddp", **cfg.trainer)
             trainer.validate(model=model, dataloaders=val_loader)
-            wandb.finish()
-
-            wandb.finish()
-
 
 if __name__ == "__main__":
     boto3.set_stream_logger(name='botocore.credentials', level=logging.ERROR)

@@ -6,42 +6,11 @@ import logging
 import boto3
 import torch
 from omegaconf import DictConfig, open_dict
-from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-from lightning.pytorch.utilities.combined_loader import CombinedLoader
 from torch.utils.data import DataLoader
-from typing import Union, Dict, Dict, Iterator
 
-import amlssl.data as data
-from amlssl.meta_arch import Supervised
-
-
-def get_checkpoint_path(ckpt):
-    '''Get the exact checkpoint path based on the prefix and the epoch number.
-    Note that the original checkpoint is named after both the epochs and the number of
-    updates. This method enables us to automatically fetch the latest ckpt based on the
-    epoch number.
-    '''
-    assert ckpt.startswith("s3://insitro-user/")
-    prefix = ckpt[len("s3://insitro-user/"):]
-
-    try:
-        s3 = boto3.client("s3")
-        response = s3.list_objects_v2(Bucket="insitro-user",
-                                      Prefix=prefix,
-                                      MaxKeys=100)
-        assert (len(response['Contents']) == 1,
-            "Received more than one files with the given ckpt prefix")
-
-        ckpt = "s3://insitro-user/" + response['Contents'][0]['Key']
-        print(f"Getting ckpt from {ckpt}")
-
-        return ckpt
-
-    except Exception as e:
-        print(prefix)
-        raise e
-
+import channelvit.data as data
+from channelvit.meta_arch import Supervised
 
 
 def get_train_loader(cfg: DictConfig):
@@ -108,9 +77,6 @@ def train(cfg: DictConfig) -> None:
         # load checkpont and perform inference
         return predict(cfg)
 
-    wandb_logger = pl_loggers.WandbLogger(**cfg.wandb)
-    wandb_logger.log_hyperparams({"nickname": cfg.nickname})
-
     # get the train data loader
     train_loader = get_train_loader(cfg)
 
@@ -124,7 +90,7 @@ def train(cfg: DictConfig) -> None:
         ModelCheckpoint(dirpath=cfg.trainer.default_root_dir, save_top_k=-1),
     ]
     trainer = pl.Trainer(
-        logger=wandb_logger, strategy="ddp_find_unused_parameters_true",
+        strategy="ddp_find_unused_parameters_true",
         callbacks=callbacks, **cfg.trainer
     )
 
@@ -134,12 +100,8 @@ def train(cfg: DictConfig) -> None:
 
 
 def predict(cfg: DictConfig) -> None:
-    wandb_logger = pl_loggers.WandbLogger(**cfg.wandb)
-    wandb_logger.log_hyperparams({"nickname": cfg.nickname})
-
-    ckpt = get_checkpoint_path(cfg.checkpoint)
-    print(f"loading model from ckpt {ckpt}")
-    model = Supervised.load_from_checkpoint(ckpt)
+    print(f"loading model from ckpt {cfg.checkpoint}")
+    model = Supervised.load_from_checkpoint(cfg.checkpoint)
 
     # load val data
     assert len(cfg.val_data_dict) == 1
@@ -152,9 +114,7 @@ def predict(cfg: DictConfig) -> None:
     val_loader = DataLoader(val_data, **val_data_cfg.loader,
                             collate_fn=val_data.collate_fn)
 
-    trainer = pl.Trainer(
-        logger=wandb_logger, strategy="ddp", **cfg.trainer
-    )
+    trainer = pl.Trainer(strategy="ddp", **cfg.trainer)
 
     trainer.validate(model=model, dataloaders=val_loader)
 

@@ -25,7 +25,6 @@ so2sat_hard:
       - 16
       - 17
 
-    upsample: 1
     channel_mask: False
     scale: 1
 

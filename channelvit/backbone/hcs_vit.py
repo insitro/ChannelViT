@@ -26,8 +26,8 @@ from functools import partial
 import torch
 import torch.nn as nn
 
-from amlssl.utils import trunc_normal_
-from amlssl.backbone.vision_transformer import Block
+from channelvit.utils import trunc_normal_
+from channelvit.backbone.vision_transformer import Block
 
 
 class PatchEmbed(nn.Module):
