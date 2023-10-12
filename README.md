@@ -39,11 +39,11 @@ You can then install channelvit through pip.
 pip install git+https://github.com/insitro/ChannelViT.git
 ```
 
-## Reproducing the results on JUMP-CP
-This section provides an example of our training and evaluation pipelines using JUMP-CP. The preprocessed JUMP-CP data utilized here was released in our previous work, "Contextual Vision Transformers for Robust Representation Learning" ([insitro/ContextViT](https://github.com/insitro/ContextViT)).
+## Reproducing results on JUMP-CP
+This section outlines the steps to reproduce our training and evaluation pipelines using JUMP-CP. The preprocessed JUMP-CP data used in this example was previously released in our work titled, "Contextual Vision Transformers for Robust Representation Learning" ([insitro/ContextViT](https://github.com/insitro/ContextViT)).
 
-### Visualizing the correlations among the input channels
-Let's start with visualizing the 
+### Visualizing correlations among input channels
+Before initiating the training of any models, it is beneficial to visualize the correlations among the input channels. The script provided below will load the JUMP-CP data and compute the channel correlations derived from the original cell painting images, without any normalization.
 ```bash
 python channelvit/main/main_correlation.py \
     trainer.devices=8 \
@@ -56,8 +56,8 @@ python channelvit/main/main_correlation.py \
     val_transformations.normalization.std=[1,1,1,1,1,1,1,1]
 ```
 
-### Training ViT-S/16 w/o HCS
-Let's start with the most straightforward scenario: training the ViT-S/16 model without HCS. We employ [hydra](https://hydra.cc/) for managing our experiment configuration. The script provided below will load its corresponding main configuration file, `channelvit/config/main_supervised.yaml`, along with any command line overrides. It trains the ViT-S/16 model to minimize the cross-entropy loss on the JUMP-CP training data over the course of 100 epochs. The process requires 8 GPUs and operates with a batch size of 32 per GPU.
+### Training ViT-S/16 without HCS
+Next, we will train a ViT-S/16 model without using HCS. For managing our experiment configuration, we utilize [hydra](https://hydra.cc/). The script provided below will load its corresponding main configuration file, `channelvit/config/main_supervised.yaml`, along with any command line overrides. It trains the ViT-S/16 model to minimize the cross-entropy loss on the JUMP-CP training data over the course of 100 epochs. The process requires 8 GPUs and operates with a batch size of 32 per GPU.
 ```bash
 python channelvit/main/main_supervised.py \
     trainer.devices=8 \
@@ -74,7 +74,7 @@ python channelvit/main/main_supervised.py \
 ```
 Given that each cell image in JUMP-CP contains 8 channels, we override the input channels to 8. Throughout the training, we save the snapshots in the `./snapshots/` directory. You can alter this path by overriding the value of `trainer.default_root_dir`. 
 
-### Training ViT-S/8 w/ HCS
+### Training ViT-S/8 with HCS
 To train the ViT-S/16 using hierarchical channel sampling, simply override the meta_arch/backbone setting to hcs_vit_small. With this setting, the Hierarchical Channel Sampling (HCS) will perform the following actions for each batch:
 1. Randomly determine the number of channels to be used for the current batch.
 2. Randomly select the combinations of channels.
@@ -109,7 +109,7 @@ python channelvit/main/main_supervised_evalall.py \
     checkpoint=${PATH_TO_CKPT}
 ```
 
-### ChannelViT-S/16 w/o HCS
+### ChannelViT-S/16 without HCS
 Training ChannelViT follows a similar process to training ViT. All you need to do is override the meta_arch/backbone setting.
 
 ```bash
@@ -127,7 +127,7 @@ python channelvit/main/main_supervised.py \
     transformations@val_transformations=cell
 ```
 
-### ChannelViT-S/8 w/ HCS
+### ChannelViT-S/8 with HCS
 Given that the patch token of ChannelViT originates from a single channel, applying HCS with ChannelViT essentially results in a shorter input patch sequence for the model. Unlike ViT, where we need to perform input rescaling to maintain smooth input distributions when different channels are used, with ChannelViT we can simply exclude the patches corresponding to the unselected channels from the input sequence.
 
 The following script provides an example of how to train the ChannelViT-S/8 model using HCS.
@@ -148,6 +148,7 @@ python channelvit/main/main_supervised.py \
 ```
 
 ### Evaluating ChannelViT
+The performance of the trained models can be evaluated over all channel combinations using the `main_supervised_evalall.py` script, similar to the evaluation process for ViT. However, there is one key difference. As we consider input channels as the sequence length of the transformer encoders, we set `transformation_mask=True`. This means we don't need to reset pixels corresponding to these channels to zero.
 ```bash
 python channelvit/main/main_supervised_evalall.py \
     trainer.devices=8 \
