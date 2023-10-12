@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Insitro, Inc. and its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,14 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-vision transformer code imported from the facebookresearch/dino repo:
-https://github.com/facebookresearch/dino/blob/main/vision_transformer.py
-
-minor changes:
-    changing the forward api for the vision transformer to support taking extra input
-    arguments (covariates of the input images)
-"""
 import random
 import math
 from functools import partial
@@ -27,7 +19,7 @@ import torch
 import torch.nn as nn
 
 from channelvit.utils import trunc_normal_
-from channelvit.backbone.vision_transformer import Block
+from channelvit.backbone.vit import Block
 
 
 class PatchEmbed(nn.Module):

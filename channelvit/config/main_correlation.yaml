@@ -10,7 +10,7 @@ defaults:
 trainer:
   devices: 1
   accelerator: "gpu"
-  max_epochs: 100
+  max_epochs: 1
   precision: 32
   default_root_dir: "./snapshots/"
   accumulate_grad_batches: 1  # gradient accumulation

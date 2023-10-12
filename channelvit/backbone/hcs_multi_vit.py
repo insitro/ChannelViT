@@ -17,7 +17,7 @@ from functools import partial
 import torch
 import torch.nn as nn
 
-from channelvit.backbone.vision_transformer import VisionTransformer
+from channelvit.backbone.vit import VisionTransformer
 
 
 class MultiChannelVisionTransformer(nn.Module):

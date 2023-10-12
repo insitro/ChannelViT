@@ -3,7 +3,7 @@
 # This work is made available under the Nvidia Source Code License-NC.
 # To view a copy of this license, visit
 # https://github.com/NVlabs/FAN/blob/main/LICENSE
-
+import random
 import math
 from functools import partial
 
@@ -237,6 +237,24 @@ class ConvPatchEmbed(nn.Module):
             raise('For convolutional projection, patch size has to be in [8, 16]')
 
     def forward(self, x):
+        B, C, H, W = x.shape
+
+        if self.training:
+            # compute real nonzero channels
+            channels = x.sum(dim=(0,2,3)).nonzero()
+            Cin = len(channels)
+
+            # per batch channel sampling
+            # randomly sample the number of channels for this batch
+            C_new = random.randint(1, Cin)
+
+            # Reweight the original pixel value to compensate for the difference
+            x = x / float(C_new) * Cin
+
+            # Randomly sample the "unselected" channels
+            channels = random.sample(channels.tolist(), k=(Cin-C_new))
+            x[:, channels, :, :] = 0
+
         x = self.proj(x)
         Hp, Wp = x.shape[2], x.shape[3]
         x = x.flatten(2).transpose(1, 2)  # (B, N, C)
@@ -802,4 +820,3 @@ def hcs_fan_small_12_p16_224(pretrained=False, bn_tf=False, **kwargs):
         # patch_size=16, embed_dim=384, depth=depth, num_heads=8, eta=1.0, tokens_norm=True, **kwargs)
     model = _create_fan('fan_small_12_p16_224', pretrained=pretrained, sr_ratio = sr_ratio, **model_kwargs)
     return model
-
