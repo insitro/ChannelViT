@@ -1,23 +1,19 @@
 # Get the Camelyon17 dataset from wilds
 import os
 
-import torch
 import numpy as np
 import pandas as pd
 from omegaconf import DictConfig
 
-from amlssl import transformations
-from amlssl.data.s3dataset import S3Dataset
-
-DATASET_PATH = "s3://insitro-user/yujia/wilds/camelyon17_v1.0/"
-UNLABELED_DATASET_PATH = "s3://insitro-user/yujia/wilds/camelyon17_unlabeled_v1.0/"
+from channelvit import transformations
+from channelvit.data.s3dataset import S3Dataset
 
 TEST_CENTER = 2
 VAL_CENTER = 1
 
 
 class Camelyon17(S3Dataset):
-    def __init__(self, split: str, is_train: bool, transform_cfg: DictConfig,
+    def __init__(self, base_path: str, split: str, is_train: bool, transform_cfg: DictConfig,
                  channels=[], scale=1):
         """
         Labeled splits: train, id_val (in distribution), val (OOD), test
@@ -34,47 +30,30 @@ class Camelyon17(S3Dataset):
             and the slide it came from (integer from 0 to 49).
         """
         super().__init__()
+
+        self.base_path = base_path
+
         self.is_train = is_train
         self.transform = getattr(transformations, transform_cfg.name)(
             is_train=is_train, **transform_cfg.args
         )
 
         if split == "train":
-            self.base_path = DATASET_PATH
             self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
             self.df = self.df[self.df["split"] == 0]
             self.df = self.df[self.df["center"] != TEST_CENTER]
             self.df = self.df[self.df["center"] != VAL_CENTER]
         elif split == "id_val":
-            self.base_path = DATASET_PATH
             self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
             self.df = self.df[self.df["split"] == 1]
             self.df = self.df[self.df["center"] != TEST_CENTER]
             self.df = self.df[self.df["center"] != VAL_CENTER]
         elif split == "test":
-            self.base_path = DATASET_PATH
             self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
             self.df = self.df[self.df["center"] == TEST_CENTER]
         elif split == "val":
-            self.base_path = DATASET_PATH
             self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
             self.df = self.df[self.df["center"] == VAL_CENTER]
-        elif split == "train_unlabeled":
-            self.base_path = UNLABELED_DATASET_PATH
-            self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
-            self.df = self.df[self.df["center"] != TEST_CENTER]
-            self.df = self.df[self.df["center"] != VAL_CENTER]
-        elif split == "val_unlabeled":
-            self.base_path = UNLABELED_DATASET_PATH
-            self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
-            self.df = self.df[self.df["center"] == VAL_CENTER]
-        elif split == "test_unlabeled":
-            self.base_path = UNLABELED_DATASET_PATH
-            self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
-            self.df = self.df[self.df["center"] == TEST_CENTER]
-        elif split == "unlabeled":
-            self.base_path = UNLABELED_DATASET_PATH
-            self.df = pd.read_csv(os.path.join(self.base_path, "metadata.csv"))
         else:
             raise ValueError(f"Unknown split {split}")
 

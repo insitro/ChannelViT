@@ -1,8 +1,7 @@
 camelyon_train:
-  # This is the camelyon17 labeled training split
-  # Compound A549 24 hours
   name: Camelyon17  # data class name
   args:
+    base_path: wilds_base_path
     split: train
     scale: 1
     channels:

@@ -1,6 +1,7 @@
 camelyon_test:
   name: Camelyon17  # data class name
   args:
+    base_path: wilds_base_path
     split: test
     scale: 1
     channels:

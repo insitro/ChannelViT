@@ -1,12 +1,11 @@
 imagenet:
   name: ImageNet
   args:
-    split: train
+    path: path_to_train_df
     channels:
       - 0
       - 1
       - 2
-    sample_channels: -1
 
   # training data loader configuration
   loader:

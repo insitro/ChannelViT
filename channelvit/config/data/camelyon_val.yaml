@@ -1,6 +1,7 @@
 camelyon_val:
   name: Camelyon17  # data class name
   args:
+    base_path: wilds_base_path
     split: val
 
   # training data loader configuration

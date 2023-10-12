@@ -1,7 +1,7 @@
 so2sat_hard_test_sentinel_1:
   name: So2Sat
   args:
-    path: s3://insitro-user/yujia/datasets/So2Sat/first_split/validation.pq
+    path: path_to_so2sat_hard_test
       
     split: -1
 

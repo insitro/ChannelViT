@@ -22,7 +22,6 @@ class So2Sat(S3Dataset):
         is_train: bool,
         transform_cfg: DictConfig,
         channels: Union[List[int], None],
-        upsample: int = 1,
         channel_mask: bool = False,
         scale: float = 1,
     ) -> None:
@@ -31,22 +30,6 @@ class So2Sat(S3Dataset):
 
         # read the cyto mask df
         self.df = pd.read_parquet(path)
-        self.base_path = path[:-len(path.split('/')[-1])]
-
-        if split != -1:
-            print(f"Subsampling with ratio {split}")
-            np.random.seed(0)
-            perm = np.random.permutation(self.df.index)
-            self.df = self.df.iloc[perm[int(split * len(self.df)):]]
-
-        if upsample != 1:
-            # upsample the dataset to increase num of batches per epoch --> match
-            # optimization statistics  with imagenet
-            print(f"Upsampling each epoch by {upsample}")
-            print(f"Original size {len(self.df)}")
-            self.df = pd.concat([self.df for _ in range(int(upsample))], ignore_index=True)
-            print(f"After upsample size {len(self.df)}")
-
 
         self.channels = torch.tensor([c for c in channels])
         self.scale = scale  # scale the input to compensate for input channel masking
@@ -62,7 +45,7 @@ class So2Sat(S3Dataset):
 
     def __getitem__(self, index):
         row = self.df.iloc[index]
-        img_chw = self.get_image(f"{self.base_path}{row['path']}").astype('float32')
+        img_chw = self.get_image(row['path']).astype('float32')
         if img_chw is None:
             return None
 

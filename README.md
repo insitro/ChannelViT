@@ -160,6 +160,36 @@ python channelvit/main/main_supervised_evalall.py \
     checkpoint=${PATH_TO_CKPT}
 ```
 
+## Running ChannelViT on other datasets
+
+### ImageNet
+It is required to download ImageNet 2012 dataset from the [official replease](https://image-net.org/challenges/LSVRC/2012/2012-downloads.php).
+We provide a dataset class under `channelvit/data/imagenet.py` to load the ImageNet data. 
+The dataset class requires two dataframes (one for the training split and one for the validation split)  with keys `path` (path to the image) and `label` (label of the image).
+You can set the path to these dataframes in the hydra configurations
+(`channelvit/config/data/imagenet.yaml` and
+`channelvit/config/data/imagenet_valid.yaml`).
+
+### Camelyon17
+We recommend users to utilize the official WILDS package for downloading the
+Camelyon17-WILDS dataset.
+```bash
+pip install wilds
+# Downloads labeled data under wilds_base_path/
+python wilds/download_datasets.py --root_dir wilds_base_path
+```
+Once the data has been successfully downloaded,  you can set the base path of the wilds
+dataset in the hydra configuration (e.g., `channelvit/config/data/camelyon_train.yaml`).
+
+
+### So2Sat
+Users can download the So2Sat dataset following the [official release](https://github.com/zhu-xlab/So2Sat-LCZ42). We use the first version (hard split) and the third version (city split).
+We provide a dataset class under `channelvit/data/so2sat.py` to load the So2Sat data. 
+The dataset class takes one dataframe with keys `path` (path to the image) and `label` (label of the image).
+The path to the dataframe can be speicfied in the hydra configuration (e.g.,
+`channelvit/config/data/so2sat_hard.yaml`).
+
+
 ## Citation
 
 If our work contributes to your research, we would greatly appreciate a citation.

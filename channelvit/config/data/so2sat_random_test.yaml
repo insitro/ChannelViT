@@ -1,7 +1,7 @@
 so2sat_test:
   name: So2Sat
   args:
-    path: s3://insitro-user/yujia/datasets/So2Sat/testing.pq
+    path: path_to_so2sat_random_test
       
     split: test
 

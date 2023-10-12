@@ -1,5 +1,6 @@
 from typing import List, Union
 
+import os
 import pandas as pd
 import torch
 from omegaconf import DictConfig
@@ -8,40 +9,19 @@ from PIL import Image
 from channelvit import transformations
 from channelvit.data.s3dataset import S3Dataset
 
-TRAIN_DATASET_PATH = (
-    "s3://insitro-curated-data/public/imagenet/indexed_df/train/dataframe.pq"
-)
-VALIDATION_DATASET_PATH = (
-    "s3://insitro-curated-data/public/imagenet/indexed_df/validation/dataframe.pq"
-)
-TEST_DATASET_PATH = (
-    "s3://insitro-curated-data/public/imagenet/indexed_df/test/dataframe.pq"
-)
-
-
 class ImageNet(S3Dataset):
     def __init__(
         self,
-        split: str,
+        path: str,
         is_train: bool,
         transform_cfg: DictConfig,
-        sample_channels: int = -1,
         channels: List[int] = [0, 1, 2],  # use all rgb channels
         scale: float = 1,
     ):
         super().__init__()
 
-        if split == "train":
-            self.df = pd.read_parquet(TRAIN_DATASET_PATH)
-        elif split == "valid":
-            self.df = pd.read_parquet(VALIDATION_DATASET_PATH)
-        elif split == "test":
-            self.df = pd.read_parquet(TEST_DATASET_PATH)
-        else:
-            raise ValueError(f"Unknown split {split}")
-
+        self.df = pd.read_parquet(path)
         self.is_train = is_train
-        self.sample_channels = sample_channels
 
         self.transform = getattr(transformations, transform_cfg.name)(
             is_train=is_train, **transform_cfg.args
@@ -68,17 +48,6 @@ class ImageNet(S3Dataset):
 
         # sample channels
         channels = self.channels
-        if self.sample_channels != -1:
-            # sample a subset of the channels
-            channel_indicies = torch.randperm(len(channels))[:self.sample_channels]
-            channels = channels[channel_indicies]
-            if type(img_chw) is list:
-                # multi crop for DINO training
-                img_chw = [c[channel_indicies,:,:] for c in img_chw]
-            else:
-                # single view for linear probing
-                img_chw = img_chw[channel_indicies,:,:]
-
         if self.scale != 1:
             if type(img_chw) is list:
                 # multi crop for DINO training

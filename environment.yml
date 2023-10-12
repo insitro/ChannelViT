@@ -151,3 +151,4 @@ dependencies:
       - websockets==11.0.3
       - wrapt==1.15.0
       - yarl==1.9.2
+      - timm==0.5.4

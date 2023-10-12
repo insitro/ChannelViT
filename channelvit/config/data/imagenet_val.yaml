@@ -1,7 +1,7 @@
 imagenet_val:
   name: ImageNet
   args:
-    split: valid
+    path: path_to_valid_df
     scale: 1
     channels:
       - 0
