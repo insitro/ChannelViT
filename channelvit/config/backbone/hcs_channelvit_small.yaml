@@ -1,4 +1,4 @@
-name: 'headv3channelvit_small'
+name: 'hcs_channelvit_small'
 args:
   patch_size: 16
   in_chans: 3

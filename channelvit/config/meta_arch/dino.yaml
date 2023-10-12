@@ -1,5 +1,5 @@
 defaults:
-  - backbone: contextvit_small
+  - backbone: channelvit_small
   - _self_
 
 # DINO Configurations

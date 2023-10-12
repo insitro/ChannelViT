@@ -68,7 +68,7 @@ python channelvit/main/main_supervised.py \
     meta_arch.num_classes=161 \
     data@train_data=jumpcp \
     data@val_data_dict=[jumpcp_val,jumpcp_test] \
-    train_data.loader.batch_size=32 \
+    train_data.jumpcp.loader.batch_size=32 \
     transformations@train_transformations=cell \
     transformations@val_transformations=cell
 ```
@@ -86,12 +86,12 @@ python channelvit/main/main_supervised.py \
     trainer.max_epochs=100 \
     meta_arch/backbone=hcs_vit_small \
     meta_arch.backbone.args.in_chans=8 \
-    meta_arch.batchbone.args.patch_size=8 \
+    meta_arch.backbone.args.patch_size=8 \
     meta_arch.target='label' \
     meta_arch.num_classes=161 \
     data@train_data=jumpcp \
     data@val_data_dict=[jumpcp_val,jumpcp_test] \
-    train_data.loader.batch_size=32 \
+    train_data.jumpcp.loader.batch_size=32 \
     transformations@train_transformations=cell \
     transformations@val_transformations=cell
 ```
@@ -122,7 +122,7 @@ python channelvit/main/main_supervised.py \
     meta_arch.num_classes=161 \
     data@train_data=jumpcp \
     data@val_data_dict=[jumpcp_val,jumpcp_test] \
-    train_data.loader.batch_size=32 \
+    train_data.jumpcp.loader.batch_size=32 \
     transformations@train_transformations=cell \
     transformations@val_transformations=cell
 ```
@@ -142,7 +142,7 @@ python channelvit/main/main_supervised.py \
     meta_arch.num_classes=161 \
     data@train_data=jumpcp \
     data@val_data_dict=[jumpcp_val,jumpcp_test] \
-    train_data.loader.batch_size=32 \
+    train_data.jumpcp.loader.batch_size=32 \
     transformations@train_transformations=cell \
     transformations@val_transformations=cell
 ```

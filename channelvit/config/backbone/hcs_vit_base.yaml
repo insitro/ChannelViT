@@ -1,4 +1,4 @@
-name: 'v4vit_small'
+name: 'hcs_vit_base'
 args:
   in_chans: 3
   input_drop: 0.0

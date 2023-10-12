@@ -1,8 +1,0 @@
-name: 'clip_cvit'
-args:
-  model_name: ViT-L/14@336px
-  plate_keys:
-    - hospital_id
-  plate_values:
-    - 5
-  amortization: patch_eam_linear

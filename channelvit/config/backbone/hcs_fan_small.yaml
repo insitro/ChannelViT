@@ -1,0 +1,3 @@
+name: 'hcs_fan_small_12_p16_224'
+args:
+  in_chans: 3

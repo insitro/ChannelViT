@@ -1,8 +1,0 @@
-name: 'sup_cvit'
-args:
-  model_name: vit_b_16
-  plate_keys:
-    - hospital_id
-  plate_values:
-    - 5
-  amortization: linear_mean

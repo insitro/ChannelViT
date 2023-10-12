@@ -1,4 +1,4 @@
-name: 'tiedv3vit_base'
+name: 'multivit_small'
 args:
   in_chans: 3
   input_drop: 0.0

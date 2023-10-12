@@ -1,4 +1,0 @@
-name: 'samplev2channelvit_small'
-args:
-  in_chans: 3
-  drop_path_rate: 0.1
