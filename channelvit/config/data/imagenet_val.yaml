@@ -1,0 +1,20 @@
+imagenet_val:
+  name: ImageNet
+  args:
+    path: path_to_valid_df
+    scale: 1
+    channels:
+      - 0
+      - 1
+      - 2
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 32
+    pin_memory: True
+    drop_last: False
+    shuffle: False
+
+  output_dir: null
+

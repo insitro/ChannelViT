@@ -1,0 +1,32 @@
+defaults:
+  - backbone: channelvit_small
+  - _self_
+#
+# linear evaluator
+num_classes: 2
+target: tumor
+label_smoothing: 0.0
+weighted_loss: 1
+
+# learning rate related
+optimizer_name: "adamw"
+  # Type of optimizer. We recommend using adamw with ViTs.
+lr: 0.0005
+  # Learning rate at the end of linear warmup (highest LR used during training). The
+  # learning rate is linearly scaled with the batch size, and specified here for a
+  # reference batch size of 256.
+min_lr:  1.0E-6
+  # Target LR at the end of optimization. We use a cosine LR schedule with linear
+  # warmup.
+warmup_epochs: 10
+  # Number of epochs for the linear learning-rate warm up.
+weight_decay: 0.04
+  # Initial value of the weight decay. With ViT, a smaller value at the beginning of
+  # training works well.
+weight_decay_end: 0.4
+  # Final value of the weight decay. We use a cosine schedule for WD and using a
+  # larger decay by the end of training improves performance for ViTs.
+  #
+patch_size: 16
+
+data_ratio: null

@@ -1,0 +1,6 @@
+name: 'hcs_channelvit_small'
+args:
+  patch_size: 16
+  in_chans: 3
+  drop_path_rate: 0.1
+  enable_sample: True

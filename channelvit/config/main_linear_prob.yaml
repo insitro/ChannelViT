@@ -1,0 +1,16 @@
+defaults:
+  - meta_arch: linear_prob
+  - data@train_data: camelyon_train
+  - data@val_data_dict:
+    - camelyon_id_val
+    - camelyon_val
+  - transformations: rgb
+  - _self_
+
+
+trainer:
+  devices: 1
+  accelerator: "gpu"
+  max_epochs: 100
+  precision: 32
+  default_root_dir: "./snapshots/"

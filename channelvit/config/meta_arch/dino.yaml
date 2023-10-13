@@ -1,0 +1,75 @@
+defaults:
+  - backbone: channelvit_small
+  - _self_
+
+# DINO Configurations
+name: dino
+
+student_channel_drop: 0
+  # whether to apply channel dropout to the input of the student network
+  # only for cell images
+
+patch_size: 16
+  # Size in pixels of input square patches - default 16 (for 16x16 patches). Using
+  # smaller values leads to better performance but requires more memory. Applies
+  # only for ViTs (vit_tiny, vit_small and vit_base). If <16, we recommend
+  # disabling mixed precision training (--use_fp16 false) to avoid unstabilities.
+
+# head configuration
+out_dim:  65536
+  # Dimensionality of the DINO head output. For complex and large datasets large
+  # values (like 65k) work well.
+use_bn_in_head:  False
+  # Whether to use batch normalizations in projection head (Default: False)
+norm_last_layer: True
+  # Whether or not to weight normalize the last layer of the DINO head.
+  # Not normalizing leads to better performance but can make the training unstable.
+  # In our experiments, we typically set this paramater to False with vit_small and
+  # True with vit_base.
+
+# dino loss
+local_crops_number: 8
+  # Number of small local views to generate. Set this parameter to 0 to disable
+  # multi-crop training.
+warmup_teacher_temp: 0.04
+  # Initial value for the teacher temperature: 0.04 works well in most cases.
+  # Try decreasing it if the training loss does not decrease.
+teacher_temp: 0.07
+  # Final value (after linear warmup) of the teacher temperature. For most
+  # experiments, anything above 0.07 is unstable. We recommend starting with the
+  # default value of 0.04 and increase this slightly if needed.
+warmup_teacher_temp_epochs: 30
+  # Number of warmup epochs for the teacher temperature (Default: 30).
+
+# learning rate related
+optimizer_name: "adamw"
+  # Type of optimizer. We recommend using adamw with ViTs.
+lr: 0.0005
+  # Learning rate at the end of linear warmup (highest LR used during training). The
+  # learning rate is linearly scaled with the batch size, and specified here for a
+  # reference batch size of 256.
+min_lr:  1.0E-6
+  # Target LR at the end of optimization. We use a cosine LR schedule with linear
+  # warmup.
+warmup_epochs: 10
+  # Number of epochs for the linear learning-rate warm up.
+weight_decay: 0.04
+  # Initial value of the weight decay. With ViT, a smaller value at the beginning of
+  # training works well.
+weight_decay_end: 0.4
+  # Final value of the weight decay. We use a cosine schedule for WD and using a
+  # larger decay by the end of training improves performance for ViTs.
+momentum_teacher: 0.996
+  # Base EMA parameter for teacher update. The value is increased to 1 during training
+  # with cosine schedule.  We recommend setting a higher value with small batches: for
+  # example use 0.9995 with batch size of 256.
+clip_grad: 3.0
+  # Maximal parameter gradient norm if using gradient clipping. Clipping with norm .3
+  # ~ 1.0 can help optimization for larger ViT architectures. 0 for disabling.
+freeze_last_layer: 1
+  # Number of epochs during which we keep the output layer fixed. Typically doing so
+  # during the first epoch helps training. Try increasing this value if the loss does
+  # not decrease.
+
+use_teacher_for_pred: null
+  # Whether to use the teacher network or the student network for inference

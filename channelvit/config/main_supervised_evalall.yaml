@@ -1,0 +1,32 @@
+defaults:
+  - meta_arch: supervised
+  - data@val_data:
+    - jumpcp_val
+  - transformations: cell
+  - _self_
+
+
+channels:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+
+# mask channels through transformation (for vit baselines)
+transformation_mask: False
+
+
+trainer:
+  devices: 1
+  accelerator: "gpu"
+  max_epochs: 100
+  precision: 32
+  default_root_dir: "./snapshots/"
+  accumulate_grad_batches: 1  # gradient accumulation
+
+# If checkpoint is specified, we will resume training from the checkpoint 
+checkpoint: null

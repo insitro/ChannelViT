@@ -1,0 +1,7 @@
+torch
+torchvision
+pytorch-lightning
+tqdm
+pandas
+wandb
+hydra-core

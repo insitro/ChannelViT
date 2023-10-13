@@ -1,0 +1,20 @@
+defaults:
+  - meta_arch: supervised
+  - data@train_data:
+    - jumpcp
+  - data@val_data_dict:
+    - jumpcp_val
+  - transformations@train_transformations: cell
+  - transformations@val_transformations: cel
+  - _self_
+
+trainer:
+  devices: 1
+  accelerator: "gpu"
+  max_epochs: 100
+  precision: 32
+  default_root_dir: "./snapshots/"
+  accumulate_grad_batches: 1  # gradient accumulation
+
+# If checkpoint is specified, we will resume training from the checkpoint 
+checkpoint: null

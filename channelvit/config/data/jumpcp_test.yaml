@@ -1,0 +1,33 @@
+jumpcp_test:
+  name: JUMPCP
+  args:
+    cyto_mask_path_list:
+      - "s3://insitro-research-2023-context-vit/jumpcp/BR00116991.pq"
+    perturbation_list:
+      - compound
+      
+    split: test
+
+    channels:
+      - 0  #Mito
+      - 1  #AGP
+      - 2  #RNA
+      - 3  #ER
+      - 4  #DNA
+      - 5  #HighZBF
+      - 6  #LowZBF
+      - 7  #Brightfield
+
+    scale: 1  # scale the input to compensate for channel masking
+    channel_mask: False
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 32
+    pin_memory: True
+    drop_last: False
+    shuffle: False
+
+  output_dir: null
+

@@ -1,0 +1,23 @@
+defaults:
+  - meta_arch: dino
+    # Define the ssl method
+    # Options: dino, simclr
+  - transformations: camelyon_dino 
+  - data: camelyon_unlabeled
+    # Define the dataset and data loader
+    # Options: BR00116991, BR00116993, BR00117000, combined
+  - _self_
+
+nickname: null
+
+trainer:
+  devices: 1
+  accelerator: "gpu"
+  max_epochs: 100  # number of epochs for training
+  precision: 16  # mixed precision training
+  default_root_dir: "./snapshots/"
+  accumulate_grad_batches: 1  # gradient accumulation
+
+
+# If checkpoint is specified, we will resume training from the checkpoint 
+checkpoint: null

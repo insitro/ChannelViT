@@ -1,0 +1,22 @@
+camelyon_test:
+  name: Camelyon17  # data class name
+  args:
+    base_path: wilds_base_path
+    split: test
+    scale: 1
+    channels:
+      - 0
+      - 1
+      - 2
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 64
+    pin_memory: True
+    drop_last: False
+    shuffle: False
+
+  output_dir: null
+
+

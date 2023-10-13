@@ -1,0 +1,40 @@
+so2sat_test:
+  name: So2Sat
+  args:
+    path: path_to_so2sat_random_test
+      
+    split: test
+
+    channels:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 17
+
+    channel_mask: False
+    scale: 1
+
+  # training data loader configuration
+  loader:
+    num_workers: 32
+    batch_size: 32
+    pin_memory: True
+    drop_last: False
+    shuffle: False
+
+  output_dir: null
+
