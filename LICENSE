@@ -1,3 +1,3 @@
 Copyright (C) 2023 Insitro, Inc. This software and any derivative works are licensed under the terms of the Creative Commons Attribution-NonCommercial 4.0 International Public License (CC-BY-NC 4.0), accessible at https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
-This software includes a library that is a modified version of dino (https://github.com/facebookresearch/dino/tree/main), which is copyright (c) Facebook, Inc. and its affiliates.and distributed under Aparche License 2.0.
+This software includes a library that is a modified version of dino (https://github.com/facebookresearch/dino/tree/main), which is copyright (c) Facebook, Inc. and its affiliates.and distributed under Apache License 2.0.
