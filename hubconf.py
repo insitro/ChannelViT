@@ -111,7 +111,7 @@ def camelyon_channelvit_small_p8_with_hcs_supervised(pretrained=True, *args, **k
     Pretrained Supervised ChannelViT-Small model (patch size = 8) trained on
     all channels from WILDS Camelyon17 dataset
     """
-    model = hcs_channelvit_small(patch_size=8, in_chans=18, *args, **kwargs)
+    model = hcs_channelvit_small(patch_size=8, in_chans=3, *args, **kwargs)
     if pretrained:
         model.load_state_dict(
             hub.load_state_dict_from_url(
